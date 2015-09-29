@@ -17,21 +17,12 @@
 package com.allenbarr.MockStats;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  * @author captainbowtie
  */
-public class Round implements Serializable {
+public class Database implements Serializable {
     private static final long serialVersionUID = 20150812;
-    private Boolean isPlaintiff = true;
-    private Integer[] witnesses = {0,0,0,0,0,0};
-    private Integer openAtty = 0;
-    private Integer[] pAttys = {0,0,0};
-    private Integer[] dAttys = {0,0,0};
-    private Integer[] wits = {0,0,0};
-    private Integer closeAtty = 0;
-    private final List<Ballot> ballots = new ArrayList<>();
+    
 }
