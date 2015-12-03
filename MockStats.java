@@ -2,8 +2,8 @@ package Temp;
 /* Program Name:  MockStats
  * Author:  Ray Barr
  * Contact Information:  allencbarr@gmail.com
- * Current Version: 1.0.4
- * Version Date:  1 December 2014
+ * Current Version: 1.0.5
+ * Version Date:  8 November 2015
  */
 
 /*This program is free software: you can redistribute it and/or modify

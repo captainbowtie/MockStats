@@ -88,7 +88,7 @@ public class PartAnalysisPane extends JPanel{
 							if(preStackTournament.get(j).getRound(k).getAll()[7]==i){
 								scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 								scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
-								scores[2]+=preStackTournament.get(j).getRound(k).getAll()[29]+preStackTournament.get(j).getRound(k).getAll()[33];
+								scores[2]+=preStackTournament.get(j).getRound(k).getAll()[29]+preStackTournament.get(j).getRound(k).getAll()[43];
 								scores[3]+=2.0;
 							}
 						}
@@ -101,7 +101,7 @@ public class PartAnalysisPane extends JPanel{
 							if(postStackTournament.get(j).getRound(k).getAll()[7]==i){
 								scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 								scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
-								scores[2]+=postStackTournament.get(j).getRound(k).getAll()[29]+postStackTournament.get(j).getRound(k).getAll()[33];
+								scores[2]+=postStackTournament.get(j).getRound(k).getAll()[29]+postStackTournament.get(j).getRound(k).getAll()[43];
 								scores[3]+=2.0;
 							}
 						}
