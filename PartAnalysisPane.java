@@ -14,6 +14,7 @@
 package Temp;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -23,6 +24,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -73,12 +75,14 @@ public class PartAnalysisPane extends JPanel{
 			partSelector[1].setSelectedIndex(0);
 			partSelector[1].addItemListener(new ComboListener());
 		}
-		allTheLabels=new JLabel[theSeason.getRoster().size()+1][4];
-		allTheScores=new double[theSeason.getRoster().size()][4];
+		allTheLabels=new JLabel[theSeason.getRoster().size()+1][5];
+		allTheScores=new double[theSeason.getRoster().size()][5];
 		resetScores();
 		for(int i=0;i<theSeason.getRoster().size();i++){
 			//ballot average, team average, raw score, denominator
 			double scores[] = {0.0,0.0,0.0,0.0};
+			//array list to track scores for standard deviation
+			List<Double> scoreList = new ArrayList<>();
 			//all or plaintiff
 			if(partSelector[1].getSelectedIndex()==0 || partSelector[1].getSelectedIndex()==1){
 				//use pre-stack numbers
@@ -90,6 +94,8 @@ public class PartAnalysisPane extends JPanel{
 								scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 								scores[2]+=preStackTournament.get(j).getRound(k).getAll()[29]+preStackTournament.get(j).getRound(k).getAll()[43];
 								scores[3]+=2.0;
+								scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[29]);
+								scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[43]);	
 							}
 						}
 					}
@@ -103,6 +109,8 @@ public class PartAnalysisPane extends JPanel{
 								scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 								scores[2]+=postStackTournament.get(j).getRound(k).getAll()[29]+postStackTournament.get(j).getRound(k).getAll()[43];
 								scores[3]+=2.0;
+								scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[29]);
+								scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[43]);	
 							}
 						}
 					}
@@ -119,6 +127,8 @@ public class PartAnalysisPane extends JPanel{
 								scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 								scores[2]+=preStackTournament.get(j).getRound(k).getAll()[57]+preStackTournament.get(j).getRound(k).getAll()[71];
 								scores[3]+=2.0;
+								scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[57]);
+								scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[71]);
 							}
 						}
 					}
@@ -132,16 +142,28 @@ public class PartAnalysisPane extends JPanel{
 								scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 								scores[2]+=postStackTournament.get(j).getRound(k).getAll()[57]+postStackTournament.get(j).getRound(k).getAll()[71];
 								scores[3]+=2.0;
+								scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[57]);
+								scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[71]);
 							}
 						}
 					}
 				}
 			}
-			//transfer calculated scores to permanent array
+
+			//caculate standard deviation and then transfer calculated scores to permanent array
 			if(scores[3]>0.0){
+				//add values other than standard deviation to array
 				allTheScores[i][1]=(scores[2]-scores[0])/scores[3];
 				allTheScores[i][2]=(scores[2]-scores[1])/scores[3];
 				allTheScores[i][3]=scores[2]/scores[3];
+				//calcuate standard deviation
+				double stDEVsum = 0.0;
+				for(int j=0;j<scoreList.size();j++){
+					stDEVsum += Math.pow((scoreList.get(j)-allTheScores[i][3]), 2);
+				}
+				double stDEV = Math.sqrt(stDEVsum/scoreList.size());
+				//add standard deviation to score list
+				allTheScores[i][4]=stDEV;
 			}
 		}	
 		ballotSortAndFill();
@@ -153,12 +175,13 @@ public class PartAnalysisPane extends JPanel{
 			partSelector[1].setSelectedIndex(0);
 			partSelector[1].addItemListener(new ComboListener());
 		}
-		allTheLabels=new JLabel[theSeason.getRoster().size()+1][4];
-		allTheScores=new double[theSeason.getRoster().size()][4];
+		allTheLabels=new JLabel[theSeason.getRoster().size()+1][5];
+		allTheScores=new double[theSeason.getRoster().size()][5];
 		resetScores();
 		for(int i=0;i<theSeason.getRoster().size();i++){
 			//ballot average, team average, raw score, denominator
 			double scores[] = {0.0,0.0,0.0,0.0};
+			List<Double> scoreList = new ArrayList<>();
 			//all or plaintiff
 			if(partSelector[1].getSelectedIndex()==0 || partSelector[1].getSelectedIndex()==1){
 				//use pre-stack numbers
@@ -170,6 +193,8 @@ public class PartAnalysisPane extends JPanel{
 								scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 								scores[2]+=preStackTournament.get(j).getRound(k).getAll()[42]+preStackTournament.get(j).getRound(k).getAll()[56];
 								scores[3]+=2.0;
+								scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[42]);
+								scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[56]);
 							}
 						}
 					}
@@ -183,6 +208,8 @@ public class PartAnalysisPane extends JPanel{
 								scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 								scores[2]+=postStackTournament.get(j).getRound(k).getAll()[42]+postStackTournament.get(j).getRound(k).getAll()[56];
 								scores[3]+=2.0;
+								scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[42]);
+								scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[56]);
 							}
 						}
 					}
@@ -199,6 +226,8 @@ public class PartAnalysisPane extends JPanel{
 								scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 								scores[2]+=preStackTournament.get(j).getRound(k).getAll()[70]+preStackTournament.get(j).getRound(k).getAll()[84];
 								scores[3]+=2.0;
+								scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[70]);
+								scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[84]);
 							}
 						}
 					}
@@ -212,16 +241,27 @@ public class PartAnalysisPane extends JPanel{
 								scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 								scores[2]+=postStackTournament.get(j).getRound(k).getAll()[70]+postStackTournament.get(j).getRound(k).getAll()[84];
 								scores[3]+=2.0;
+								scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[70]);
+								scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[84]);
 							}
 						}
 					}
 				}
 			}
-			//transfer calculated scores to permanent array
+			//caculate standard deviation and then transfer calculated scores to permanent array
 			if(scores[3]>0.0){
+				//add values other than standard deviation to array
 				allTheScores[i][1]=(scores[2]-scores[0])/scores[3];
 				allTheScores[i][2]=(scores[2]-scores[1])/scores[3];
 				allTheScores[i][3]=scores[2]/scores[3];
+				//calcuate standard deviation
+				double stDEVsum = 0.0;
+				for(int j=0;j<scoreList.size();j++){
+					stDEVsum += Math.pow((scoreList.get(j)-allTheScores[i][3]), 2);
+				}
+				double stDEV = Math.sqrt(stDEVsum/scoreList.size());
+				//add standard deviation to score list
+				allTheScores[i][4]=stDEV;
 			}
 		}
 		ballotSortAndFill();
@@ -233,12 +273,13 @@ public class PartAnalysisPane extends JPanel{
 			partSelector[1].setSelectedIndex(0);
 			partSelector[1].addItemListener(new ComboListener());
 		}
-		allTheLabels=new JLabel[theSeason.getRoster().size()+1][4];
-		allTheScores=new double[theSeason.getRoster().size()][4];
+		allTheLabels=new JLabel[theSeason.getRoster().size()+1][5];
+		allTheScores=new double[theSeason.getRoster().size()][5];
 		resetScores();
 
 		for(int i=0;i<theSeason.getRoster().size();i++){
 			double[] scores={0.0,0.0,0.0,0.0};
+			List<Double> scoreList = new ArrayList<>();
 			for(int a=0;a<theSeason.getWitnesses().size();a++){
 				if(partSelector[1].getSelectedIndex()==0 || partSelector[1].getSelectedIndex()==(a+1)){
 					//pre-stack
@@ -250,31 +291,43 @@ public class PartAnalysisPane extends JPanel{
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[30]+preStackTournament.get(j).getRound(k).getAll()[44];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[30]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[44]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[2]==a && preStackTournament.get(j).getRound(k).getAll()[10]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[33]+preStackTournament.get(j).getRound(k).getAll()[47];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[33]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[47]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[3]==a && preStackTournament.get(j).getRound(k).getAll()[12]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[36]+preStackTournament.get(j).getRound(k).getAll()[50];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[36]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[50]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[4]==a && preStackTournament.get(j).getRound(k).getAll()[22]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[61]+preStackTournament.get(j).getRound(k).getAll()[75];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[61]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[75]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[5]==a && preStackTournament.get(j).getRound(k).getAll()[24]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[64]+preStackTournament.get(j).getRound(k).getAll()[78];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[64]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[78]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[6]==a && preStackTournament.get(j).getRound(k).getAll()[26]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[67]+preStackTournament.get(j).getRound(k).getAll()[81];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[67]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[81]);
 								}
 							}
 						}
@@ -288,42 +341,63 @@ public class PartAnalysisPane extends JPanel{
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[30]+postStackTournament.get(j).getRound(k).getAll()[44];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[30]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[44]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[2]==a && postStackTournament.get(j).getRound(k).getAll()[10]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[33]+postStackTournament.get(j).getRound(k).getAll()[47];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[33]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[47]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[3]==a && postStackTournament.get(j).getRound(k).getAll()[12]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[36]+postStackTournament.get(j).getRound(k).getAll()[50];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[36]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[50]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[4]==a && postStackTournament.get(j).getRound(k).getAll()[22]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[61]+postStackTournament.get(j).getRound(k).getAll()[75];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[61]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[75]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[5]==a && postStackTournament.get(j).getRound(k).getAll()[24]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[64]+postStackTournament.get(j).getRound(k).getAll()[78];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[64]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[78]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[6]==a && postStackTournament.get(j).getRound(k).getAll()[26]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[67]+postStackTournament.get(j).getRound(k).getAll()[81];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[67]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[81]);
 								}
 							}
 						}
 					}
 				}
 			}
-			//transfer calculated scores to permanent array
+			//caculate standard deviation and then transfer calculated scores to permanent array
 			if(scores[3]>0.0){
+				//add values other than standard deviation to array
 				allTheScores[i][1]=(scores[2]-scores[0])/scores[3];
 				allTheScores[i][2]=(scores[2]-scores[1])/scores[3];
 				allTheScores[i][3]=scores[2]/scores[3];
+				//calcuate standard deviation
+				double stDEVsum = 0.0;
+				for(int j=0;j<scoreList.size();j++){
+					stDEVsum += Math.pow((scoreList.get(j)-allTheScores[i][3]), 2);
+				}
+				double stDEV = Math.sqrt(stDEVsum/scoreList.size());
+				//add standard deviation to score list
+				allTheScores[i][4]=stDEV;
 			}
 		}
 		ballotSortAndFill();
@@ -335,11 +409,12 @@ public class PartAnalysisPane extends JPanel{
 			partSelector[1].setSelectedIndex(0);
 			partSelector[1].addItemListener(new ComboListener());
 		}
-		allTheLabels=new JLabel[theSeason.getRoster().size()+1][4];
-		allTheScores=new double[theSeason.getRoster().size()][4];
+		allTheLabels=new JLabel[theSeason.getRoster().size()+1][5];
+		allTheScores=new double[theSeason.getRoster().size()][5];
 		resetScores();
 		for(int i=0;i<theSeason.getRoster().size();i++){
 			double[] scores={0.0,0.0,0.0,0.0};
+			List<Double> scoreList = new ArrayList<>();
 			for(int a=0;a<theSeason.getWitnesses().size();a++){
 				if(partSelector[1].getSelectedIndex()==0 || partSelector[1].getSelectedIndex()==(a+1)){
 					//pre-stack
@@ -351,31 +426,43 @@ public class PartAnalysisPane extends JPanel{
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[58]+preStackTournament.get(j).getRound(k).getAll()[72];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[58]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[72]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[2]==a && preStackTournament.get(j).getRound(k).getAll()[20]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[59]+preStackTournament.get(j).getRound(k).getAll()[73];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[59]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[73]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[3]==a && preStackTournament.get(j).getRound(k).getAll()[21]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[60]+preStackTournament.get(j).getRound(k).getAll()[74];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[60]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[74]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[4]==a && preStackTournament.get(j).getRound(k).getAll()[14]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[39]+preStackTournament.get(j).getRound(k).getAll()[53];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[39]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[53]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[5]==a && preStackTournament.get(j).getRound(k).getAll()[15]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[40]+preStackTournament.get(j).getRound(k).getAll()[54];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[40]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[54]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[6]==a && preStackTournament.get(j).getRound(k).getAll()[16]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[41]+preStackTournament.get(j).getRound(k).getAll()[55];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[41]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[55]);
 								}
 							}
 						}
@@ -389,42 +476,63 @@ public class PartAnalysisPane extends JPanel{
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[58]+postStackTournament.get(j).getRound(k).getAll()[72];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[58]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[72]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[2]==a && postStackTournament.get(j).getRound(k).getAll()[20]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[59]+postStackTournament.get(j).getRound(k).getAll()[73];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[59]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[73]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[3]==a && postStackTournament.get(j).getRound(k).getAll()[21]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[60]+postStackTournament.get(j).getRound(k).getAll()[74];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[60]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[74]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[4]==a && postStackTournament.get(j).getRound(k).getAll()[14]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[39]+postStackTournament.get(j).getRound(k).getAll()[53];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[39]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[53]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[5]==a && postStackTournament.get(j).getRound(k).getAll()[15]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[40]+postStackTournament.get(j).getRound(k).getAll()[54];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[40]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[54]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[6]==a && postStackTournament.get(j).getRound(k).getAll()[16]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[41]+postStackTournament.get(j).getRound(k).getAll()[55];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[41]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[55]);
 								}
 							}
 						}
 					}
 				}
 			}
-			//transfer calculated scores to permanent array
+			//caculate standard deviation and then transfer calculated scores to permanent array
 			if(scores[3]>0.0){
+				//add values other than standard deviation to array
 				allTheScores[i][1]=(scores[2]-scores[0])/scores[3];
 				allTheScores[i][2]=(scores[2]-scores[1])/scores[3];
 				allTheScores[i][3]=scores[2]/scores[3];
+				//calcuate standard deviation
+				double stDEVsum = 0.0;
+				for(int j=0;j<scoreList.size();j++){
+					stDEVsum += Math.pow((scoreList.get(j)-allTheScores[i][3]), 2);
+				}
+				double stDEV = Math.sqrt(stDEVsum/scoreList.size());
+				//add standard deviation to score list
+				allTheScores[i][4]=stDEV;
 			}
 		}
 		ballotSortAndFill();
@@ -436,11 +544,12 @@ public class PartAnalysisPane extends JPanel{
 			partSelector[1].setSelectedIndex(0);
 			partSelector[1].addItemListener(new ComboListener());
 		}
-		allTheLabels=new JLabel[theSeason.getRoster().size()+1][4];
-		allTheScores=new double[theSeason.getRoster().size()][4];
+		allTheLabels=new JLabel[theSeason.getRoster().size()+1][5];
+		allTheScores=new double[theSeason.getRoster().size()][5];
 		resetScores();
 		for(int i=0;i<theSeason.getRoster().size();i++){
 			double[] scores={0.0,0.0,0.0,0.0};
+			List<Double> scoreList = new ArrayList<>();
 			for(int a=0;a<theSeason.getWitnesses().size();a++){
 				if(partSelector[1].getSelectedIndex()==0 || partSelector[1].getSelectedIndex()==(a+1)){
 					//pre-stack
@@ -452,31 +561,43 @@ public class PartAnalysisPane extends JPanel{
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[31]+preStackTournament.get(j).getRound(k).getAll()[45];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[31]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[45]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[2]==a && preStackTournament.get(j).getRound(k).getAll()[11]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[34]+preStackTournament.get(j).getRound(k).getAll()[48];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[34]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[48]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[3]==a && preStackTournament.get(j).getRound(k).getAll()[13]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[37]+preStackTournament.get(j).getRound(k).getAll()[51];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[37]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[51]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[4]==a && preStackTournament.get(j).getRound(k).getAll()[23]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[62]+preStackTournament.get(j).getRound(k).getAll()[76];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[62]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[76]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[5]==a && preStackTournament.get(j).getRound(k).getAll()[25]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[65]+preStackTournament.get(j).getRound(k).getAll()[79];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[65]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[79]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[6]==a && preStackTournament.get(j).getRound(k).getAll()[27]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[68]+preStackTournament.get(j).getRound(k).getAll()[82];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[68]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[82]);
 								}
 							}
 						}
@@ -490,42 +611,63 @@ public class PartAnalysisPane extends JPanel{
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[31]+postStackTournament.get(j).getRound(k).getAll()[45];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[31]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[45]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[2]==a && postStackTournament.get(j).getRound(k).getAll()[11]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[34]+postStackTournament.get(j).getRound(k).getAll()[48];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[34]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[48]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[3]==a && postStackTournament.get(j).getRound(k).getAll()[13]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[37]+postStackTournament.get(j).getRound(k).getAll()[51];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[37]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[51]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[4]==a && postStackTournament.get(j).getRound(k).getAll()[23]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[62]+postStackTournament.get(j).getRound(k).getAll()[76];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[62]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[76]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[5]==a && postStackTournament.get(j).getRound(k).getAll()[25]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[65]+postStackTournament.get(j).getRound(k).getAll()[79];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[65]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[79]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[6]==a && postStackTournament.get(j).getRound(k).getAll()[27]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[68]+postStackTournament.get(j).getRound(k).getAll()[82];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[68]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[82]);
 								}
 							}
 						}
 					}
 				}
 			}
-			//transfer calculated scores to permanent array
+			//caculate standard deviation and then transfer calculated scores to permanent array
 			if(scores[3]>0.0){
+				//add values other than standard deviation to array
 				allTheScores[i][1]=(scores[2]-scores[0])/scores[3];
 				allTheScores[i][2]=(scores[2]-scores[1])/scores[3];
 				allTheScores[i][3]=scores[2]/scores[3];
+				//calcuate standard deviation
+				double stDEVsum = 0.0;
+				for(int j=0;j<scoreList.size();j++){
+					stDEVsum += Math.pow((scoreList.get(j)-allTheScores[i][3]), 2);
+				}
+				double stDEV = Math.sqrt(stDEVsum/scoreList.size());
+				//add standard deviation to score list
+				allTheScores[i][4]=stDEV;
 			}
 		}
 		ballotSortAndFill();
@@ -537,11 +679,12 @@ public class PartAnalysisPane extends JPanel{
 			partSelector[1].setSelectedIndex(0);
 			partSelector[1].addItemListener(new ComboListener());
 		}
-		allTheLabels=new JLabel[theSeason.getRoster().size()+1][4];
-		allTheScores=new double[theSeason.getRoster().size()][4];
+		allTheLabels=new JLabel[theSeason.getRoster().size()+1][5];
+		allTheScores=new double[theSeason.getRoster().size()][5];
 		resetScores();
 		for(int i=0;i<theSeason.getRoster().size();i++){
 			double[] scores={0.0,0.0,0.0,0.0};
+			List<Double> scoreList = new ArrayList<>();
 			for(int a=0;a<theSeason.getWitnesses().size();a++){
 				if(partSelector[1].getSelectedIndex()==0 || partSelector[1].getSelectedIndex()==(a+1)){
 					//pre-stack
@@ -553,31 +696,43 @@ public class PartAnalysisPane extends JPanel{
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[32]+preStackTournament.get(j).getRound(k).getAll()[46];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[32]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[46]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[2]==a && preStackTournament.get(j).getRound(k).getAll()[11]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[35]+preStackTournament.get(j).getRound(k).getAll()[49];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[35]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[49]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[3]==a && preStackTournament.get(j).getRound(k).getAll()[13]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[38]+preStackTournament.get(j).getRound(k).getAll()[52];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[38]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[52]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[4]==a && preStackTournament.get(j).getRound(k).getAll()[23]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[63]+preStackTournament.get(j).getRound(k).getAll()[77];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[63]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[77]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[5]==a && preStackTournament.get(j).getRound(k).getAll()[25]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[66]+preStackTournament.get(j).getRound(k).getAll()[80];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[66]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[80]);
 								}else if(preStackTournament.get(j).getRound(k).getAll()[6]==a && preStackTournament.get(j).getRound(k).getAll()[27]==i){
 									scores[0]+=preStackTournament.get(j).getRound(k).getBallot1Average()+preStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=preStackTournament.get(j).getRound(k).getBallot1TeamAverage()+preStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=preStackTournament.get(j).getRound(k).getAll()[69]+preStackTournament.get(j).getRound(k).getAll()[83];
 									scores[3]+=2.0;
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[69]);
+									scoreList.add((double)preStackTournament.get(j).getRound(k).getAll()[83]);
 								}
 							}
 						}
@@ -591,42 +746,63 @@ public class PartAnalysisPane extends JPanel{
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[32]+postStackTournament.get(j).getRound(k).getAll()[46];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[32]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[46]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[2]==a && postStackTournament.get(j).getRound(k).getAll()[11]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[35]+postStackTournament.get(j).getRound(k).getAll()[49];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[35]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[49]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[3]==a && postStackTournament.get(j).getRound(k).getAll()[13]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[38]+postStackTournament.get(j).getRound(k).getAll()[52];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[38]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[52]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[4]==a && postStackTournament.get(j).getRound(k).getAll()[23]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[63]+postStackTournament.get(j).getRound(k).getAll()[77];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[63]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[77]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[5]==a && postStackTournament.get(j).getRound(k).getAll()[25]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[66]+postStackTournament.get(j).getRound(k).getAll()[80];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[66]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[80]);
 								}else if(postStackTournament.get(j).getRound(k).getAll()[6]==a && postStackTournament.get(j).getRound(k).getAll()[27]==i){
 									scores[0]+=postStackTournament.get(j).getRound(k).getBallot1Average()+postStackTournament.get(j).getRound(k).getBallot2Average();
 									scores[1]+=postStackTournament.get(j).getRound(k).getBallot1TeamAverage()+postStackTournament.get(j).getRound(k).getBallot2TeamAverage();
 									scores[2]+=postStackTournament.get(j).getRound(k).getAll()[69]+postStackTournament.get(j).getRound(k).getAll()[83];
 									scores[3]+=2.0;
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[69]);
+									scoreList.add((double)postStackTournament.get(j).getRound(k).getAll()[83]);
 								}
 							}
 						}
 					}
 				}
 			}
-			//transfer calculated scores to permanent array
+			//caculate standard deviation and then transfer calculated scores to permanent array
 			if(scores[3]>0.0){
+				//add values other than standard deviation to array
 				allTheScores[i][1]=(scores[2]-scores[0])/scores[3];
 				allTheScores[i][2]=(scores[2]-scores[1])/scores[3];
 				allTheScores[i][3]=scores[2]/scores[3];
+				//calcuate standard deviation
+				double stDEVsum = 0.0;
+				for(int j=0;j<scoreList.size();j++){
+					stDEVsum += Math.pow((scoreList.get(j)-allTheScores[i][3]), 2);
+				}
+				double stDEV = Math.sqrt(stDEVsum/scoreList.size());
+				//add standard deviation to score list
+				allTheScores[i][4]=stDEV;
 			}
 		}
 		ballotSortAndFill();
@@ -661,53 +837,66 @@ public class PartAnalysisPane extends JPanel{
 		allTheLabels[0][1]=new JLabel("+/- Ballot");
 		allTheLabels[0][2]=new JLabel("+/- Team");
 		allTheLabels[0][3]=new JLabel("Raw");
+		allTheLabels[0][4]=new JLabel("STDev");
 		for(int i=0;i<sortedScores.size();i++){
+			//Check to see if scores exist for the team member, otherwise jump to just putting name and "N/A"
 			if(sortedScores.get(i)[1]!=-10.0){
-				int subIndex;
+				int scoreTrunicationIndex;
+				//Convert student index number into a name
 				allTheLabels[i+1][0]=new JLabel(theSeason.getRoster().get((int)sortedScores.get(i)[0]));
-				subIndex=4;
+				scoreTrunicationIndex=4;
+				//Check to see if below ballot average
 				if(sortedScores.get(i)[1]<0){
-					subIndex=5;
+					scoreTrunicationIndex=5;
 				}
-				if(Double.toString(sortedScores.get(i)[1]).length()<subIndex){
-					subIndex=Double.toString(sortedScores.get(i)[1]).length();
+				if(Double.toString(sortedScores.get(i)[1]).length()<scoreTrunicationIndex){
+					scoreTrunicationIndex=Double.toString(sortedScores.get(i)[1]).length();
 				}
-				allTheLabels[i+1][1]=new JLabel(Double.toString(sortedScores.get(i)[1]).substring(0,subIndex));
+				allTheLabels[i+1][1]=new JLabel(Double.toString(sortedScores.get(i)[1]).substring(0,scoreTrunicationIndex));
 				allTheLabels[i+1][1].setOpaque(true);
 				if(sortedScores.get(i)[1]<0){
 					allTheLabels[i+1][1].setBackground(Color.pink);
 				}else{
 					allTheLabels[i+1][1].setBackground(Color.green);
 				}
-				subIndex=4;
+				scoreTrunicationIndex=4;
 				if(sortedScores.get(i)[2]<0){
-					subIndex=5;
+					scoreTrunicationIndex=5;
 				}
-				if(Double.toString(sortedScores.get(i)[2]).length()<subIndex){
-					subIndex=Double.toString(sortedScores.get(i)[2]).length();
+				if(Double.toString(sortedScores.get(i)[2]).length()<scoreTrunicationIndex){
+					scoreTrunicationIndex=Double.toString(sortedScores.get(i)[2]).length();
 				}
-				allTheLabels[i+1][2]=new JLabel(Double.toString(sortedScores.get(i)[2]).substring(0,subIndex));
+				allTheLabels[i+1][2]=new JLabel(Double.toString(sortedScores.get(i)[2]).substring(0,scoreTrunicationIndex));
 				allTheLabels[i+1][2].setOpaque(true);
 				if(sortedScores.get(i)[2]<0){
 					allTheLabels[i+1][2].setBackground(Color.pink);
 				}else{
 					allTheLabels[i+1][2].setBackground(Color.green);
 				}
-				subIndex=4;
+				scoreTrunicationIndex=4;
 				if(sortedScores.get(i)[3]<0){
-					subIndex=5;
+					scoreTrunicationIndex=5;
 				}
-				if(Double.toString(sortedScores.get(i)[3]).length()<subIndex){
-					subIndex=Double.toString(sortedScores.get(i)[3]).length();
+				if(Double.toString(sortedScores.get(i)[3]).length()<scoreTrunicationIndex){
+					scoreTrunicationIndex=Double.toString(sortedScores.get(i)[3]).length();
 				}
-				allTheLabels[i+1][3]=new JLabel(Double.toString(sortedScores.get(i)[3]).substring(0,subIndex));
+				allTheLabels[i+1][3]=new JLabel(Double.toString(sortedScores.get(i)[3]).substring(0,scoreTrunicationIndex));
+				scoreTrunicationIndex=4;
+				if(sortedScores.get(i)[4]<0){
+					scoreTrunicationIndex=5;
+				}
+				if(Double.toString(sortedScores.get(i)[4]).length()<scoreTrunicationIndex){
+					scoreTrunicationIndex=Double.toString(sortedScores.get(i)[4]).length();
+				}
+				allTheLabels[i+1][4]=new JLabel(Double.toString(sortedScores.get(i)[4]).substring(0,scoreTrunicationIndex));
 			}else{
 				allTheLabels[i+1][0]=new JLabel(theSeason.getRoster().get((int)sortedScores.get(i)[0]));
 			}
 		}
 		GridBagLayout gbl = new GridBagLayout();
 		GridBagConstraints gbc = new GridBagConstraints();
-		setLayout(new BorderLayout());
+		BorderLayout borderLayout = new BorderLayout();
+		setLayout(borderLayout);
 		rayPanel[0].setLayout(new GridLayout(2,2));
 		rayPanel[1].setLayout(gbl);
 		rayPanel[0].add(partSelector[0]);
@@ -715,7 +904,7 @@ public class PartAnalysisPane extends JPanel{
 		rayPanel[0].add(partSelector[1]);
 		rayPanel[0].add(prePostCheck[1]);
 		gbc.fill=GridBagConstraints.BOTH;
-		for(int i=0;i<4;i++){
+		for(int i=0;i<5;i++){
 			gbc.gridx=i;
 			for(int j=0;j<theSeason.getRoster().size()+1;j++){
 				gbc.gridy=j;
@@ -723,13 +912,14 @@ public class PartAnalysisPane extends JPanel{
 				gbl.setConstraints(allTheLabels[j][i],gbc);
 			}
 		}
-		for(int i=0;i<4;i++){
+		for(int i=0;i<5;i++){
 			for(int j=0;j<theSeason.getRoster().size()+1;j++){
 				rayPanel[1].add(allTheLabels[j][i]);
 			}
 		}
-		add(rayPanel[0],BorderLayout.NORTH);
-		add(rayPanel[1],BorderLayout.CENTER);
+		add(rayPanel[0],BorderLayout.SOUTH);
+		add(rayPanel[1],BorderLayout.NORTH);
+		
 		this.repaint();
 		this.revalidate();
 	}
